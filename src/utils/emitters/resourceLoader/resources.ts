@@ -81,7 +81,7 @@ class Resources extends EventEmitter {
     private sourceLoaded (source: ModelInfo, file: ResourceFile): void {
         this.items[source.name] = file
         this.loaded++
-        console.log(file)
+        // console.log(file)
 
     }
 }
