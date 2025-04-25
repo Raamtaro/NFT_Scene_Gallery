@@ -8,7 +8,7 @@ import Mouse from '../utils/mouse.ts';
 import Renderer from './renderer.ts';
 import Camera from './camera.ts';
 
-import HelloWorld from './helloWorld/helloWorld.ts';
+// import HelloWorld from './helloWorld/helloWorld.ts';
 
 
 
@@ -35,7 +35,7 @@ class Experience {
     public camera: Camera
     public mouse: Mouse
     public scene: THREE.Scene
-    public helloWorld: HelloWorld
+    // // public helloWorld: HelloWorld
 
     // private rendererables: (Points | Mesh)[] = []
     // private scenes: SceneObject[] = []
@@ -52,7 +52,7 @@ class Experience {
         this.renderer = new Renderer()
         this.scene = new THREE.Scene()
 
-        this.helloWorld = new HelloWorld()
+        // // this.helloWorld = new HelloWorld()
 
         this.time.on('tick', this.render.bind(this)) 
     }
