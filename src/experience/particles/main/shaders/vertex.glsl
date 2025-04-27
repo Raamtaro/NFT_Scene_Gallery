@@ -48,5 +48,5 @@ void main()
     // Varying
 
     vUv = uv;
-    vColor = vec3(0.0);
+    vColor = vec3(0.941, 0.918, 0.839);
 }

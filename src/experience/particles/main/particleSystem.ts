@@ -37,6 +37,7 @@ interface ParticleConfig {
     geometry: BufferGeometry
     baseVector: Vector3
     smallVector: Vector3
+    resizeBreakpoint: number
     gpgpuConfig: GpgpuUniformValues
     particleConfig: ParticleUniformValues
     onUpdate: (points?: Points, time?: TimeKeeper) => void
@@ -154,14 +155,14 @@ class ParticleSystem {
         this.points = new Points(this.bufferGeometry, this.shaderMaterial)
         //Check to set the right size at first
 
-        if (this.dimensions.width <= 1000) {
+        if (this.dimensions.width <= this.config.resizeBreakpoint) {
             this.points.scale.set(this.config.smallVector.x, this.config.smallVector.y, this.config.smallVector.z)
             // console.log(typeof this.points.scale)
             this.baseScale = false
         } 
         else {
-            this.points.scale.set(this.config.baseVector.x, this.config.baseVector.y, this.config.baseVector.z) //1000 and above
-            this.baseScale = true //This means that we are scaling for 1000+
+            this.points.scale.set(this.config.baseVector.x, this.config.baseVector.y, this.config.baseVector.z) //this.config.resizeBreakpoint and above
+            this.baseScale = true //This means that we are scaling for this.config.resizeBreakpoint+
         }
 
         this.points.frustumCulled = false
@@ -169,7 +170,7 @@ class ParticleSystem {
 
         this.points.renderOrder = 0
         this.points.position.set(0, 0, 0)
-        this.experience.scene.add(this.points)
+        // this.experience.scene.add(this.points)
     }
 
     private resize(): void {
@@ -179,7 +180,7 @@ class ParticleSystem {
 
     private scaleResize(): void {
         // console.log(Setup.width)
-        if (this.dimensions.width <= 1000) { //Will get caught if we resize to 1000 or under
+        if (this.dimensions.width <= this.config.resizeBreakpoint) { //Will get caught if we resize to this.config.resizeBreakpoint or under
             if (this.baseScale && !(this.points === null)) { //Checking to see what the baseScale is set at
                 this.points.scale.set(this.config.smallVector.x, this.config.smallVector.y, this.config.smallVector.z)
                 this.baseScale = false //This means that we are viewing with a smaller screen
@@ -187,7 +188,7 @@ class ParticleSystem {
             return //If it reaches here, then this.baseScale was already false, and there's no action needs
         }
 
-        //Will pass the above check as long as we resize to above 1000
+        //Will pass the above check as long as we resize to above this.config.resizeBreakpoint
 
         if (!this.baseScale && !(this.points === null)) { //Is the screen small?
             this.points.scale.set(this.config.baseVector.x, this.config.baseVector.y, this.config.baseVector.z)
