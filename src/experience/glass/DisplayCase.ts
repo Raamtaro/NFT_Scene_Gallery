@@ -19,6 +19,30 @@ interface DisplayCaseConfig {
     baseSize: THREE.Vector3
     smallSize: THREE.Vector3
     resizeBreakpoint: number
+    uniformConfig: {
+        // iors: {
+        //     uIorR: number,
+        //     uIorG: number,
+        //     uIorB: number,
+        //     uIorY: number,
+        //     uIorC: number,
+        //     uIorP: number,
+        // },
+        // refractionParams: {
+        //     uChromaticAberration: number,
+        //     uRefractPower: number,
+        //     uSaturation: number,
+        // },
+        // lighting: {
+        //     uShininess: number,
+        //     uDiffuseness: number,
+        //     uFresnelPower: number,
+        // },
+        factors: {
+            uLightFactor: number,
+            uFresnelFactor: number,
+        }
+    }
 
 }
 
@@ -67,14 +91,17 @@ class DisplayCase {
                     uIorP: new THREE.Uniform(1.0598),
 
                     uChromaticAberration: new THREE.Uniform(.77),
-                    uRefractPower: new THREE.Uniform(1.066),
+                    uRefractPower: new THREE.Uniform(0.746),
                     uOffset: new THREE.Uniform(0.0),
                     uSaturation: new THREE.Uniform(1.07),
 
-                    uShininess: new THREE.Uniform(40),
-                    uDiffuseness: new THREE.Uniform(0.27),
+                    uShininess: new THREE.Uniform(100),
+                    uDiffuseness: new THREE.Uniform(0.213),
                     uLight: new THREE.Uniform(new THREE.Vector3(-1.0, 1.0, 1.0)),
-                    uFresnelPower: new THREE.Uniform(4.7),
+                    uFresnelPower: new THREE.Uniform(8.4),
+                    
+                    uLightFactor: new THREE.Uniform(config.uniformConfig.factors.uLightFactor),
+                    uFresnelFactor: new THREE.Uniform(config.uniformConfig.factors.uFresnelFactor)
                 },  
                 vertexShader: vertexShader,
                 fragmentShader: fragmentShader
@@ -104,7 +131,6 @@ class DisplayCase {
 
     private init(): void {
         this.configSize()
-        this.experience.scene.add(this.instance)
         this.setUpControls()
     }
 
@@ -166,7 +192,7 @@ class DisplayCase {
 
     private updateIors(): void {
         
-        (this.material as ShaderMaterial).uniforms.uOffset.value = this.mouse.targetVelocity*.25;
+        (this.material as ShaderMaterial).uniforms.uOffset.value = this.mouse.targetVelocity*.125;
         
 
     }
@@ -189,6 +215,8 @@ class DisplayCase {
         lightingFolder.add(this.material.uniforms.uShininess, 'value', 0, 100).name('uShininess');
         lightingFolder.add(this.material.uniforms.uDiffuseness, 'value', 0.0, 1.0).name('uDiffuseness');
         lightingFolder.add(this.material.uniforms.uFresnelPower, 'value', 0.0, 10.0).name('uFresnelPower');
+
+        this.gui.destroy()
     }
 
     private update(): void {

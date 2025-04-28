@@ -2,6 +2,7 @@ import { BufferGeometry, Vector2, Uniform, ShaderMaterial, BufferAttribute, Poin
 // import { GLTF } from "three/examples/jsm/Addons.js"
 import Sizes from '../../../utils/emitters/sizes'
 import TimeKeeper from '../../../utils/emitters/timeKeeper'
+import Mouse from "../../../utils/mouse"
 
 import Experience from '../../experience'
 
@@ -9,12 +10,6 @@ import Gpgpu from '../gpgpu/gpgpu'
 
 import particleSimVertex from './shaders/vertex.glsl'
 import particleSimFragment from './shaders/fragment.glsl'
-
-// type ResourceFile = GLTF | Texture
-
-// interface ResourceDictionary {
-//     [name: string]: ResourceFile
-// }
 
 interface ParticleUniforms {
     [name: string]: IUniform
@@ -40,7 +35,7 @@ interface ParticleConfig {
     resizeBreakpoint: number
     gpgpuConfig: GpgpuUniformValues
     particleConfig: ParticleUniformValues
-    onUpdate: (points?: Points, time?: TimeKeeper) => void
+    onUpdate: (points?: Points, time?: TimeKeeper, mouse?: Mouse) => void
 }
 
 class ParticleSystem {
@@ -49,9 +44,8 @@ class ParticleSystem {
     private dimensions: Sizes
     private time: TimeKeeper
 
-    // private models: ResourceDictionary
+   
     private config: ParticleConfig
-    // private geometry: BufferGeometry
     private bufferGeometry: BufferGeometry
     private shaderMaterial: ShaderMaterial
     private gpgpu: Gpgpu
@@ -71,11 +65,6 @@ class ParticleSystem {
         this.time = this.experience.time
 
         this.config = config
-        
-        // this.models = this.experience.resources.items
-
-        // this.geometry = !name ? new IcosahedronGeometry(2, 100) : this.setGeometry(name)
-        // this.geometry = new IcosahedronGeometry(2, 100)
         this.gpgpu = new Gpgpu(this.config.geometry, this.config.gpgpuConfig)
         this.count = this.gpgpu.count
         this.size = this.gpgpu.size
@@ -108,24 +97,7 @@ class ParticleSystem {
         this.time.on('tick', this.update.bind(this))
         
     }
-    
-    // private setGeometry(name: string): BufferGeometry {
-    //     let model: ResourceFile = this.models[name] as GLTF
-    //     let geometry: BufferGeometry | null = null
 
-    //     model.scene.traverse((child)=> {
-    //         if (child instanceof Mesh) {
-    //             geometry = child.geometry
-    //             return
-    //         }
-    //     })
-
-    //     if (!geometry) {
-    //         throw new Error(`No mesh geometry found for model: ${name}`)
-    //     }
-
-    //     return geometry 
-    // }
 
     private populateArrays(): void {
         for (let y = 0; y < this.size; y++) {
@@ -201,7 +173,7 @@ class ParticleSystem {
         this.shaderMaterial.uniforms.uParticlesTexture.value = this.gpgpu.instance.getCurrentRenderTarget(this.gpgpu.particlesVariable).texture;
         this.shaderMaterial.uniforms.uTime.value = this.time.uniformElapsed;
 
-        this.config.onUpdate(this.points as Points, this.time)
+        this.config.onUpdate(this.points as Points, this.time, this.experience.mouse)
     }
 
 

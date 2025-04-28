@@ -23,6 +23,9 @@ uniform float uDiffuseness;
 uniform vec3 uLight;
 uniform float uFresnelPower;
 
+uniform float uFresnelFactor;
+uniform float uLightFactor;
+
 varying vec3 worldNormal;
 varying vec3 eyeVector;
 varying vec2 vUv;
@@ -113,13 +116,13 @@ void main () {
 
     color /= float(LOOP);
 
-    // // Specular
-    // float specularLight = specular(uLight, uShininess, uDiffuseness);
-    // color += specularLight;
+    // Specular
+    float specularLight = specular(uLight, uShininess, uDiffuseness) * uLightFactor;
+    color += specularLight;
 
-    // // Fresnel
-    // float f = fresnel(eyeVector, normal, uFresnelPower);
-    // color.rgb += f * vec3(1.0);
+    // Fresnel
+    float f = fresnel(eyeVector, normal, uFresnelPower) * uFresnelFactor;
+    color.rgb += f * vec3(1.0);
 
     gl_FragColor = vec4(color, 1.0);
     // gl_FragColor = vec4(uv, 1.0, 1.0);
