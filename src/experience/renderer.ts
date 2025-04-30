@@ -24,6 +24,7 @@ class Renderer {
 
             }
         )
+       
         this.init()
         this.size.on('resize', this.resize.bind(this))
     }

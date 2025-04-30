@@ -11,7 +11,7 @@ import vertexShader from "./shaders/vertex.glsl"
 import fragmentShader from "./shaders/fragment.glsl"
 import Renderer from '../renderer.ts';
 
-import GUI from 'lil-gui';
+// import GUI from 'lil-gui';
 
 
 interface DisplayCaseConfig {
@@ -57,7 +57,7 @@ class DisplayCase {
     private material: ShaderMaterial 
     private baseScale: boolean | null = null
     private fbo: THREE.WebGLRenderTarget
-    private gui: GUI
+    // // private gui: GUI
     
     public instance: Mesh
 
@@ -73,7 +73,7 @@ class DisplayCase {
 
         this.config = config
 
-        this.gui = new GUI()
+        // // this.gui = new GUI()
 
         
         this.material = new ShaderMaterial(
@@ -131,7 +131,7 @@ class DisplayCase {
 
     private init(): void {
         this.configSize()
-        this.setUpControls()
+        // this.setUpControls()
     }
 
     private configSize(): void {
@@ -181,10 +181,11 @@ class DisplayCase {
         this.instance.visible = false
 
         this.renderer.instance.setRenderTarget(this.fbo as THREE.WebGLRenderTarget);
+        this.renderer.instance.clear(true, true, true);
         this.renderer.instance.render(this.experience.scene, this.experience.camera.instance);
         
         (this.material as ShaderMaterial).uniforms.uTargetTexture.value = this.fbo.texture;
-        (this.material as ShaderMaterial).uniforms.uTargetTexture.value.needsUpdate = true;
+        // (this.material as ShaderMaterial).uniforms.uTargetTexture.value.needsUpdate = true;
 
         this.renderer.instance.setRenderTarget(null)
         this.instance.visible = true
@@ -195,28 +196,6 @@ class DisplayCase {
         (this.material as ShaderMaterial).uniforms.uOffset.value = this.mouse.targetVelocity*.125;
         
 
-    }
-
-    private setUpControls(): void {
-        const iorsFolder = this.gui.addFolder('Iors');
-        iorsFolder.add(this.material.uniforms.uIorR, 'value', 1.0, 1.2).name('uIorR');
-        iorsFolder.add(this.material.uniforms.uIorG, 'value', 1.0, 1.2).name('uIorG');
-        iorsFolder.add(this.material.uniforms.uIorB, 'value', 1.0, 1.2).name('uIorB');
-        iorsFolder.add(this.material.uniforms.uIorY, 'value', 1.0, 1.2).name('uIorY');
-        iorsFolder.add(this.material.uniforms.uIorC, 'value', 1.0, 1.2).name('uIorC');
-        iorsFolder.add(this.material.uniforms.uIorP, 'value', 1.0, 1.2).name('uIorP');
-    
-        const refractionParamsFolder = this.gui.addFolder('RefractionParams');
-        refractionParamsFolder.add(this.material.uniforms.uChromaticAberration, 'value', 0.0, 1.0).name('uChromaticAberration');
-        refractionParamsFolder.add(this.material.uniforms.uRefractPower, 'value', 0.0, 2.0).name('uRefractPower');
-        refractionParamsFolder.add(this.material.uniforms.uSaturation, 'value', 0.0, 2.0).name('uSaturation');
-    
-        const lightingFolder = this.gui.addFolder('Lighting');
-        lightingFolder.add(this.material.uniforms.uShininess, 'value', 0, 100).name('uShininess');
-        lightingFolder.add(this.material.uniforms.uDiffuseness, 'value', 0.0, 1.0).name('uDiffuseness');
-        lightingFolder.add(this.material.uniforms.uFresnelPower, 'value', 0.0, 10.0).name('uFresnelPower');
-
-        this.gui.destroy()
     }
 
     private update(): void {
