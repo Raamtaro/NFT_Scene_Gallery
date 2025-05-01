@@ -15,9 +15,11 @@ uniform float uTime;
 varying vec2 vUv;
 
 void main () {
-    vec2 uv = vUv;
+    vec2 px = 1.0 / uResolution;
+    // vec2 uv = vUv;
+    vec2 uv = (vUv) * (1.0 - 2.0 * px) + px;
 
-    vec4 testTexture = texture2D(uSceneTwoTexture, uv);
+    vec4 testTexture = texture2D(uSceneOneTexture, uv);
 
     gl_FragColor = testTexture;
     // gl_FragColor = vec4(uv, 0.0, 1.);

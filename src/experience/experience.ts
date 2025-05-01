@@ -13,7 +13,7 @@ import Camera from './camera.ts';
 import Resources from '../utils/emitters/resourceLoader/resources.ts';
 import ParticleSystem from './particles/main/particleSystem.ts';
 import DisplayCase from './glass/DisplayCase.ts';
-import gsap from 'gsap';
+// import gsap from 'gsap';
 
 type ResourceFile = GLTF | THREE.Texture
 
@@ -29,6 +29,11 @@ interface ParticleDisplayPairs {
     target?: THREE.WebGLRenderTarget
     scene?: THREE.Scene
     text: string
+}
+
+interface FBOPairs {
+    scene?: THREE.Scene
+    target?: THREE.WebGLRenderTarget
 }
 
 
@@ -47,6 +52,7 @@ class Experience {
 
     public ultimateScene: FinalScene
     public particleDisplayPairings: ParticleDisplayPairs[] = []
+    public fboPairs: FBOPairs[] = []  //The indices should correspond to the particleDisplayPairings
     public headerGroup: HTMLElement = document.querySelector('.header-group') as HTMLElement
 
     constructor() {
@@ -83,26 +89,6 @@ class Experience {
         this.setupScenes()
         this.compileScenes()
 
-        // this.scene.add(this.particleDisplayPairings[0].particleSystem.points as THREE.Points)
-        // this.scene.add(this.particleDisplayPairings[0].displayCase.instance as THREE.Mesh)
-        // this.headerGroup.innerText = this.particleDisplayPairings[0].text
-
-        // this.scene.add(this.particleDisplayPairings[1].particleSystem.points as THREE.Points)
-        // this.scene.add(this.particleDisplayPairings[1].displayCase.instance as THREE.Mesh)
-        // this.headerGroup.innerText = this.particleDisplayPairings[1].text
-
-        // this.scene.add(this.particleDisplayPairings[2].particleSystem.points as THREE.Points)
-        // this.scene.add(this.particleDisplayPairings[2].displayCase.instance as THREE.Mesh)
-        // this.headerGroup.innerText = this.particleDisplayPairings[2].text
-
-        gsap.to(
-            document.querySelector("header"),
-            {
-                opacity: 1.0,
-                ease: 'power2.inOut',
-                duration: 1.95,
-            }
-        )
         
         this.time.on('tick', this.render.bind(this))
         this.size.on('resize', this.resize.bind(this))
@@ -208,8 +194,8 @@ class Experience {
                             uMaxDistance: 3.05
                         },
                         onUpdate(points, time, mouse) {
-                            points!.rotation.x = (-mouse!.coords_trail.y * 0.25 + Math.PI / 16) + Math.sin(points!.rotation.y + time!.uniformElapsed * 0.4) * 0.05
-                            points!.rotation.y = mouse!.coords_trail.x * 0.225;
+                            points!.rotation.x = (-mouse!.coords_trail.y * 0.35 + Math.PI / 16) + Math.sin(points!.rotation.y + time!.uniformElapsed * 0.4) * 0.05
+                            points!.rotation.y = mouse!.coords_trail.x * 0.325;
                             
                             
                         }
@@ -252,6 +238,10 @@ class Experience {
                 pairing.target = new THREE.WebGLRenderTarget(this.size.width * this.size.pixelRatio, this.size.height * this.size.pixelRatio, 
                     {
                         type: THREE.FloatType,
+                        wrapS: THREE.ClampToEdgeWrapping,
+                        wrapT: THREE.ClampToEdgeWrapping,
+                        magFilter: THREE.LinearFilter,
+                        minFilter: THREE.LinearFilter,
                     }
                 )
                 pairing.target.texture.generateMipmaps = false
@@ -275,8 +265,6 @@ class Experience {
     private runPipeline(pairing: ParticleDisplayPairs): void {
         this.renderer.instance.setRenderTarget(pairing.target as THREE.WebGLRenderTarget);
         this.renderer.instance.render(pairing.scene as THREE.Scene, this.camera.instance);
-        // this.renderer.instance.setRenderTarget(null)
-        
     }
 
     private updateFinalSceneUniforms(): void {
