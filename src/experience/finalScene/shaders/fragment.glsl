@@ -21,7 +21,10 @@ void main () {
 
     vec4 testTexture = texture2D(uSceneOneTexture, uv);
 
-    gl_FragColor = testTexture;
+
+    vec4 finalColor = mix(vec4(0.0), testTexture, uProgress);
+
+    gl_FragColor = finalColor;
     // gl_FragColor = vec4(uv, 0.0, 1.);
     #include <tonemapping_fragment>
     #include <colorspace_fragment>

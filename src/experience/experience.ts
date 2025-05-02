@@ -222,17 +222,24 @@ class Experience {
 
     private setupScenes(): void {
         this.particleDisplayPairings.forEach(
-            (pairing) => {
-                pairing.scene = new THREE.Scene()
-                pairing.scene.add(pairing.particleSystem.points as THREE.Points)
-                pairing.scene.add(pairing.displayCase.instance as THREE.Mesh)
-                pairing.scene.add(this.camera.instance)
+            (pairing, i) => {
+                this.fboPairs.push({})
+                this.fboPairs[i].scene = new THREE.Scene() //This line is throwing an uncaught in promise error - cannot set property 'scene' of undefined
+                this.fboPairs[i].scene.background = new THREE.Color(0x0E1111)
+                pairing.displayCase.fboScene = this.fboPairs[i].scene
+                this.fboPairs[i].scene.add(pairing.particleSystem.points as THREE.Points)
+                this.fboPairs[i].scene.add(pairing.displayCase.instance as THREE.Mesh)
+                this.fboPairs[i].scene.add(this.camera.instance)
+                // pairing.scene = new THREE.Scene()
+                // pairing.scene.add(pairing.particleSystem.points as THREE.Points)
+                // pairing.scene.add(pairing.displayCase.instance as THREE.Mesh)
+                // pairing.scene.add(this.camera.instance)
             }
         )
     }
 
     private compileScenes(): void {
-        this.particleDisplayPairings.forEach(
+        this.fboPairs.forEach(
             (pairing) => {
                 this.renderer.instance.compile(pairing.scene as THREE.Scene, this.camera.instance)
                 pairing.target = new THREE.WebGLRenderTarget(this.size.width * this.size.pixelRatio, this.size.height * this.size.pixelRatio, 
@@ -242,6 +249,7 @@ class Experience {
                         wrapT: THREE.ClampToEdgeWrapping,
                         magFilter: THREE.LinearFilter,
                         minFilter: THREE.LinearFilter,
+                        
                     }
                 )
                 pairing.target.texture.generateMipmaps = false
@@ -250,7 +258,7 @@ class Experience {
     }
 
     private runPipelineOnEachPairing(): void {
-        this.particleDisplayPairings.forEach(
+        this.fboPairs.forEach(
             (pairing) => {
                 this.runPipeline(pairing)
                 
@@ -262,21 +270,22 @@ class Experience {
         
     }
 
-    private runPipeline(pairing: ParticleDisplayPairs): void {
+    private runPipeline(pairing: FBOPairs): void {
         this.renderer.instance.setRenderTarget(pairing.target as THREE.WebGLRenderTarget);
+        this.renderer.instance.clear(true, true, true);
         this.renderer.instance.render(pairing.scene as THREE.Scene, this.camera.instance);
     }
 
     private updateFinalSceneUniforms(): void {
-        this.ultimateScene.material.uniforms.uSceneOneTexture.value = this.particleDisplayPairings[0].target!.texture
-        this.ultimateScene.material.uniforms.uSceneTwoTexture.value = this.particleDisplayPairings[1].target!.texture
-        this.ultimateScene.material.uniforms.uSceneThreeTexture.value = this.particleDisplayPairings[2].target!.texture
-        this.ultimateScene.material.uniforms.uRenderedScene.value = this.particleDisplayPairings[2].target!.texture
-        this.ultimateScene.material.uniforms.uNextScene.value = this.particleDisplayPairings[0].target!.texture
+        this.ultimateScene.material.uniforms.uSceneOneTexture.value = this.fboPairs[0].target!.texture
+        this.ultimateScene.material.uniforms.uSceneTwoTexture.value = this.fboPairs[1].target!.texture
+        this.ultimateScene.material.uniforms.uSceneThreeTexture.value = this.fboPairs[2].target!.texture
+        this.ultimateScene.material.uniforms.uRenderedScene.value = this.fboPairs[2].target!.texture
+        this.ultimateScene.material.uniforms.uNextScene.value = this.fboPairs[0].target!.texture
     }
 
     private resize(): void {
-        this.particleDisplayPairings.forEach(
+        this.fboPairs.forEach(
             (pairing) => {
                 pairing.target!.setSize(this.size.width * this.size.pixelRatio, this.size.height * this.size.pixelRatio)
             }

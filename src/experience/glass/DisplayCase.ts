@@ -60,6 +60,7 @@ class DisplayCase {
     // // private gui: GUI
     
     public instance: Mesh
+    public fboScene: THREE.Scene | null = null
 
 
     constructor(config: DisplayCaseConfig) {
@@ -182,7 +183,12 @@ class DisplayCase {
 
         this.renderer.instance.setRenderTarget(this.fbo as THREE.WebGLRenderTarget);
         // this.renderer.instance.clear(true, true, true);
-        this.renderer.instance.render(this.experience.particleDisplayPairings[0].scene!, this.experience.camera.instance);
+        // this.renderer.instance.render(this.experience.particleDisplayPairings[0].scene!, this.experience.camera.instance); //Hard coded for now
+
+        if (this.fboScene) {
+            this.renderer.instance.render(this.fboScene,this.experience.camera.instance);
+        }
+        
         
         (this.material as ShaderMaterial).uniforms.uTargetTexture.value = this.fbo.texture;
         // (this.material as ShaderMaterial).uniforms.uTargetTexture.value.needsUpdate = true;
