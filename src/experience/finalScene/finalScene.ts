@@ -44,14 +44,15 @@ class FinalScene {
             uRenderedScene: new Uniform(null),
             uNextScene: new Uniform(null),
 
-            uProgress: new Uniform(1.0),
+            uProgress: new Uniform(0.0),
         }
 
         this.material = new ShaderMaterial(
             {
                 uniforms: this.uniforms,
                 vertexShader: vertexShader,
-                fragmentShader: fragmentShader
+                fragmentShader: fragmentShader,
+                
             }
         )
 
