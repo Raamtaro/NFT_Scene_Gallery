@@ -15,6 +15,7 @@ import ParticleSystem from './particles/main/particleSystem.ts';
 import DisplayCase from './glass/DisplayCase.ts';
 import NavBar from './navBar/NavButtons.ts';
 import Header from './header/Header.ts';
+import LoadingScreen from './loading.ts';
 
 type ResourceFile = GLTF | THREE.Texture
 
@@ -52,6 +53,7 @@ class Experience {
     public resources: Resources
 
     public ultimateScene: FinalScene
+    public loadingScreen: LoadingScreen 
     public particleDisplayPairings: ParticleDisplayPairs[] = []
     public fboPairs: FBOPairs[] = []  //The indices should correspond to the particleDisplayPairings
     
@@ -70,10 +72,15 @@ class Experience {
         this.camera = new Camera()
         this.renderer = new Renderer()
         this.scene = new THREE.Scene()
-        this.resources = new Resources()
-        this.ultimateScene = new FinalScene()
-
         
+        this.ultimateScene = new FinalScene()
+        this.loadingScreen = new LoadingScreen()
+        this.resources = new Resources()
+
+        this.header = new Header()
+        this.navBar = new NavBar()
+
+        this.time.on('tick', this.render.bind(this));
         this.resources.on('ready', this.init.bind(this))
          
     }
@@ -93,14 +100,19 @@ class Experience {
         
         this.setupScenes()
         this.compileScenes()
+        // this.setUpNavAndHeader()
         
+        
+        this.size.on('resize', this.resize.bind(this));
 
         
-        this.time.on('tick', this.render.bind(this))
-        this.size.on('resize', this.resize.bind(this))
 
-        this.header = new Header()
-        this.setupNavBar()
+    }
+
+    public setUpNavAndHeader(): void {
+        (this.header as Header).init();
+        (this.navBar as NavBar).init();
+        
     }
 
     private setUpPairings(): void {
@@ -229,10 +241,6 @@ class Experience {
         )
     }
 
-    private setupNavBar(): void {
-        this.navBar = new NavBar()
-    }
-
     private setupScenes(): void {
         this.particleDisplayPairings.forEach(
             (pairing, i) => {
@@ -254,10 +262,6 @@ class Experience {
                 pairing.target = new THREE.WebGLRenderTarget(this.size.width * this.size.pixelRatio, this.size.height * this.size.pixelRatio, 
                     {
                         type: THREE.FloatType,
-                        wrapS: THREE.ClampToEdgeWrapping,
-                        wrapT: THREE.ClampToEdgeWrapping,
-                        magFilter: THREE.LinearFilter,
-                        minFilter: THREE.LinearFilter,
                         
                     }
                 )
@@ -286,11 +290,7 @@ class Experience {
     }
 
     private updateFinalSceneUniforms(): void {
-        // this.ultimateScene.material.uniforms.uSceneOneTexture.value = this.fboPairs[0].target!.texture
-        // this.ultimateScene.material.uniforms.uSceneTwoTexture.value = this.fboPairs[1].target!.texture
-        // this.ultimateScene.material.uniforms.uSceneThreeTexture.value = this.fboPairs[2].target!.texture
         this.ultimateScene.material.uniforms.uRenderedScene.value = this.fboPairs[this.currentIndex].target!.texture
-        // this.ultimateScene.material.uniforms.uNextScene.value = this.fboPairs[0].target!.texture
     }
 
     private resize(): void {
@@ -320,9 +320,11 @@ class Experience {
     }
 
     private render(): void {
+        if (this.fboPairs.length === 3 && this.fboPairs[0].target && this.fboPairs[1].target && this.fboPairs[2].target) { //This is hardcoded, there needs to be a better approach later.
+            this.runPipelineOnEachPairing()
+            this.updateFinalSceneUniforms()
+        }
 
-        this.runPipelineOnEachPairing()
-        this.updateFinalSceneUniforms()
         
         this.renderer.instance.render(this.ultimateScene.instance, this.ultimateScene.camera)
 

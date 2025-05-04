@@ -3,39 +3,34 @@ import Experience from "../experience";
 import gsap from "gsap";
 import Header from "../header/Header";
 
-interface NavBarConfig {
-    key: number
-    text: string
-}
-
 
 class NavBar {
     private experience: Experience
     private sceneSelector: HTMLUListElement
-    private sceneText: NavBarConfig[]
+    // private sceneText: NavBarConfig[]
     private finalRenderMaterial: ShaderMaterial
 
     constructor() {
         this.experience = Experience.getInstance()
         this.finalRenderMaterial = this.experience.ultimateScene.material
-        this.sceneText = this.experience.particleDisplayPairings.map((pair, index) => {
-            return {
-                key: index,
-                text: pair.text
-            }
-        })
-        // console.log(this.sceneText)
         this.sceneSelector = document.querySelector('.scene-list') as HTMLUListElement
-        this.init()
+        // this.init()
     }   
 
-    private init(): void {
+    public init(): void {
         this.setupText()
         this.setupEventListeners()
     }
 
     private setupText(): void {
-        this.sceneText.forEach((scene) => {
+        const sceneText = this.experience.particleDisplayPairings.map((pair, index) => {
+            return {
+                key: index,
+                text: pair.text
+            }
+        })
+
+        sceneText.forEach((scene) => {
             const li = document.createElement('li')
             li.classList.add('scene-item')
             li.innerText = scene.text
