@@ -1,6 +1,8 @@
 import {Scene, PlaneGeometry, ShaderMaterial, LoadingManager, Mesh} from 'three';
-import Experience from './experience';
+import Experience from '../experience';
+ 
 import gsap from 'gsap';
+
 
 class LoadingScreen {
     private experience: Experience;
@@ -53,7 +55,20 @@ class LoadingScreen {
                     y: -100,
                     duration: 1.0,
                 })
+                t1.fromTo(document.querySelector('.title') as HTMLElement, 
+                    {
+                        delay: 0.5,
+                        
+                        y: +100,
+                    },
+                    {
+                        opacity: 1.0,
+                        duration: 1.0,
+                        y: 0,
+                    }
+                )
                 t1.to((this.instance.material as ShaderMaterial).uniforms.uAlpha, {
+                    delay: 1.0,
                     value: 0.0,
                     duration: 1.0,
                     onComplete: () => {

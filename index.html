@@ -9,15 +9,31 @@
 </head>
 
 <body>
+    <canvas class="webGl"></canvas>
+
+    
     <header>
+        <div class="title">GLASS EXHIBIT</div>
         <div class="header-group"></div>
     </header>
-    <canvas class="webGl"></canvas>
-    <nav class="scene-selector">
-        <ul class="scene-list">
 
-        </ul>
+    <nav class="scene-selector">
+        <button class="hamburger">
+            <span></span><span></span><span></span>
+        </button>
+        <div class="menu-panel">
+            <ul class="scene-list">
+            </ul>
+        </div>
     </nav>
+
+    <!-- Loading Screen elements -->
+    <!-- <div class="home-info">
+        <div class="home-info-text">
+            <h1>Particles In Glass</h1>
+            <p>Click to start</p>
+        </div>
+    </div> -->
     <div id="loader-counter" class="loader-counter">0%</div>
 </body>
 </html>

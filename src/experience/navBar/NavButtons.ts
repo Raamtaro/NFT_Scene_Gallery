@@ -7,8 +7,8 @@ import Header from "../header/Header";
 class NavBar {
     private experience: Experience
     private sceneSelector: HTMLUListElement
-    // private sceneText: NavBarConfig[]
     private finalRenderMaterial: ShaderMaterial
+    private timeline: gsap.core.Timeline
 
     constructor() {
         this.experience = Experience.getInstance()

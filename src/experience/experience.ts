@@ -15,7 +15,7 @@ import ParticleSystem from './particles/main/particleSystem.ts';
 import DisplayCase from './glass/DisplayCase.ts';
 import NavBar from './navBar/NavButtons.ts';
 import Header from './header/Header.ts';
-import LoadingScreen from './loading.ts';
+import LoadingScreen from './loadingScreen/loading.ts';
 
 type ResourceFile = GLTF | THREE.Texture
 
@@ -100,7 +100,7 @@ class Experience {
         
         this.setupScenes()
         this.compileScenes()
-        // this.setUpNavAndHeader()
+       
         
         
         this.size.on('resize', this.resize.bind(this));
