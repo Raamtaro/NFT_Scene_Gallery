@@ -111,7 +111,7 @@ header {
   justify-content: space-between;
   cursor: pointer;
   pointer-events: auto;
-
+  opacity: 0.0;
 }
 
 .hamburger span {
@@ -156,7 +156,7 @@ ul {
   right: 1rem;
   z-index: 999;          
   
-  font-size: 5rem;
+  font-size: 7.5rem;
   color: #F0EAD6;
   mix-blend-mode: difference;
   pointer-events: none;  

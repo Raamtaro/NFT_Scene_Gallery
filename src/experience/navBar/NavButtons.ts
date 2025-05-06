@@ -8,18 +8,84 @@ class NavBar {
     private experience: Experience
     private sceneSelector: HTMLUListElement
     private finalRenderMaterial: ShaderMaterial
-    private timeline: gsap.core.Timeline
+    private t1: GSAPTimeline
+    private open: boolean = false
+    private panel: HTMLElement
+    private hamburger: HTMLButtonElement
+    private items: HTMLLIElement[] | null = null
 
     constructor() {
         this.experience = Experience.getInstance()
         this.finalRenderMaterial = this.experience.ultimateScene.material
         this.sceneSelector = document.querySelector('.scene-list') as HTMLUListElement
+        this.t1 = gsap.timeline({ease: 'power2.inOut', delay: .75, paused: true})
+        this.panel = document.querySelector('.menu-panel') as HTMLDivElement
+        this.hamburger = document.querySelector('.hamburger') as HTMLButtonElement
+
         // this.init()
     }   
 
     public init(): void {
+        this.showHamburger()
         this.setupText()
         this.setupEventListeners()
+        this.setupToggle()
+    }
+
+    private showHamburger(): void {
+        gsap.to(this.hamburger,{
+            delay: 0.5,
+            opacity: 1,
+            duration: .5,
+            ease: 'power2inOut'
+        })
+    }
+
+    private setupToggle(): void {
+        this.items = Array.from(this.sceneSelector.children) as HTMLLIElement[]
+
+        this.t1
+            .to(this.panel,
+                {
+                    x: "50%",
+                    duration: 0.5,
+                    onStart: () => {
+                        this.panel.style.pointerEvents = "auto"
+                    }
+                }
+            )
+            .to(this.items, 
+                {
+                    opacity: 1,
+                    stagger: 0.1,
+                    duration: 0.5,
+                    pointerEvents: "auto",
+                },
+                '-=0.5'
+            )
+        this.hamburger.addEventListener('click', () => {
+            this.open ? this.closeMenu() : this.openMenu();
+            });
+    }
+
+    private openMenu(): void {
+        this.open = true;
+        this.t1.play();
+        // rotate bars into an X, optional
+        gsap.to(this.hamburger, {
+          rotation: 90,
+          duration: 0.3
+        });
+    }
+
+    private closeMenu(): void {
+        this.open = false;
+        this.t1.reverse();
+        gsap.to(this.hamburger, {
+          rotation: 0,
+          y: 0,
+          duration: 0.3
+        });
     }
 
     private setupText(): void {
